@@ -33,17 +33,18 @@ export default function Auth({ onAuthed }) {
         localStorage.setItem('token', data.access_token)
         onAuthed()
       } else {
-        const body = new URLSearchParams()
-        body.append('username', email)
-        body.append('password', password)
-        const res = await fetch(`${baseUrl}/auth/login`, { method: 'POST', body })
+        const res = await fetch(`${baseUrl}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
         if (!res.ok) throw new Error(await res.text())
         const data = await res.json()
         localStorage.setItem('token', data.access_token)
         onAuthed()
       }
     } catch (e) {
-      setError(e.message)
+      setError(e.message || 'Request failed')
     } finally {
       setLoading(false)
     }
